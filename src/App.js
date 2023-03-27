@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useCallback } from "react";
 
 import MoviesList from "./components/MovieList";
 import "./App.css";
-let timeOut;
+// let timeOut;
 function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading ,setIsLoading]=useState(false)
   const [error,setError]=useState(null)
-  const [isRetrying,setIsRetrying]=useState(false)
-  async function fetchMoviesHandler() {
+  // const [isRetrying,setIsRetrying]=useState(false)
+  
+ const fetchMoviesHandler = useCallback(async()=> {
   setIsLoading(true)
   setError(null)
-  try{ const response = await fetch("https://swapi.dev/api/film");
+  try{ const response = await fetch("https://swapi.dev/api/films");
   if(!response.ok){
-    throw new Error('something went wrong! ...retrying after 5 secs')
+    throw new Error('something went wrong!')
   }
   const data = await response.json();
    
@@ -30,13 +31,18 @@ function App() {
 }
 catch(error){
 setError(error.message)
-setIsRetrying(true)
-timeOut=setTimeout(()=>{
-  fetchMoviesHandler()
-},5000)
+// setIsRetrying(true)
+// timeOut=setTimeout(()=>{
+//   fetchMoviesHandler()
+// },5000)
 }
 setIsLoading(false)
-  }
+  },[])
+
+  useEffect(()=>{
+    fetchMoviesHandler()
+  },[fetchMoviesHandler])
+
   let content= <p>Found No Movies</p>
   if(movies.length>0){
    content= <MoviesList movies={movies} />
@@ -47,18 +53,18 @@ setIsLoading(false)
   if(error){
     content= <p>{error}</p>
   }
-  const retryingHandler=()=>{
-    clearTimeout(timeOut)
-    setIsRetrying(false)
-    setError(null)
-  }
+  // const retryingHandler=()=>{
+  //   clearTimeout(timeOut)
+  //   setIsRetrying(false)
+  //   setError(null)
+  // }
  
 
   return (
     <React.Fragment>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
-        {isRetrying && <button onClick={retryingHandler}>Stop Retrying</button>}
+        {/* {isRetrying && <button onClick={retryingHandler}>Stop Retrying</button>} */}
       </section>
       <section>
       {content}
