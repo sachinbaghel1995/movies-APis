@@ -2,36 +2,66 @@ import React, { useState } from "react";
 
 import MoviesList from "./components/MovieList";
 import "./App.css";
-
+let timeOut;
 function App() {
-  const [Movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState([]);
   const [isLoading ,setIsLoading]=useState(false)
+  const [error,setError]=useState(null)
+  const [isRetrying,setIsRetrying]=useState(false)
   async function fetchMoviesHandler() {
-    setIsLoading(true)
-    const response = await fetch("https://swapi.dev/api/films");
-    const data = await response.json();
-     
-    const transformedMovies = data.results.map((movieData) => {
-      return {
-        id: movieData.episode_id,
-        title: movieData.title,
-        openingText: movieData.opening_crawl,
-        releaseDate: movieData.release_date,
-      };
-    });
-    setMovies(transformedMovies);
-    setIsLoading(false)
+  setIsLoading(true)
+  setError(null)
+  try{ const response = await fetch("https://swapi.dev/api/film");
+  if(!response.ok){
+    throw new Error('something went wrong! ...retrying after 5 secs')
   }
+  const data = await response.json();
+   
+  const transformedMovies = data.results.map((movieData) => {
+    return {
+      id: movieData.episode_id,
+      title: movieData.title,
+      openingText: movieData.opening_crawl,
+      releaseDate: movieData.release_date,
+    };
+  });
+  setMovies(transformedMovies);
+  
+}
+catch(error){
+setError(error.message)
+setIsRetrying(true)
+timeOut=setTimeout(()=>{
+  fetchMoviesHandler()
+},5000)
+}
+setIsLoading(false)
+  }
+  let content= <p>Found No Movies</p>
+  if(movies.length>0){
+   content= <MoviesList movies={movies} />
+      }
+  if(isLoading){
+    content= <p>Loading...</p>
+  }
+  if(error){
+    content= <p>{error}</p>
+  }
+  const retryingHandler=()=>{
+    clearTimeout(timeOut)
+    setIsRetrying(false)
+    setError(null)
+  }
+ 
 
   return (
     <React.Fragment>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
+        {isRetrying && <button onClick={retryingHandler}>Stop Retrying</button>}
       </section>
       <section>
-      {!isLoading && Movies.length>0 && <MoviesList movies={Movies} />}
-      {!isLoading && Movies.length===0 &&<p>no movies found</p>}
-      {isLoading && <p>Loading...</p>}
+      {content}
       </section>
     </React.Fragment>
   );
