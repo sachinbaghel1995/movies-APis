@@ -2,12 +2,16 @@ import React, { useState,useEffect,useCallback } from "react";
 
 import MoviesList from "./components/MovieList";
 import "./App.css";
+import AddMovie from "./components/AddMovie";
 // let timeOut;
 function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading ,setIsLoading]=useState(false)
   const [error,setError]=useState(null)
   // const [isRetrying,setIsRetrying]=useState(false)
+  const AddMovieHandler=(movie)=>{
+console.log(movie)
+  }
   
  const fetchMoviesHandler = useCallback(async()=> {
   setIsLoading(true)
@@ -63,6 +67,7 @@ setIsLoading(false)
   return (
     <React.Fragment>
       <section>
+        <AddMovie onAddMovie={AddMovieHandler}/>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
         {/* {isRetrying && <button onClick={retryingHandler}>Stop Retrying</button>} */}
       </section>
