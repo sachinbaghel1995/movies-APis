@@ -12,6 +12,9 @@ event.preventDefault()
         releaseDate:releaseDate.current.value
     }
     props.onAddMovie(movie)
+    title.current.value = '';
+    openingText.current.value = '';
+    releaseDate.current.value = '';
 }
 
 
