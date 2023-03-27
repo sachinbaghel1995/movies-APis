@@ -85,7 +85,7 @@ setIsLoading(false)
   return (
     <React.Fragment>
       <section>
-        <AddMovie onAddMovie={onDeleteHandler}/>
+        <AddMovie onAddMovie={AddMovieHandler}/>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
         {/* {isRetrying && <button onClick={retryingHandler}>Stop Retrying</button>} */}
         
